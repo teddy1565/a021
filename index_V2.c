@@ -72,7 +72,48 @@ static char *Add(char *s1,char *s2){
     while(*++result=='0');
     return result;
 }
-static char *Sub(char *s1,char*s2){return "hello sub";}
+
+static char *Sub(char *s1,char *s2){
+    if(strlen(s1)<strlen(s2)){
+        return Sub(s2,s1);
+    }else if(strlen(s1)==strlen(s2)){
+        for(int i=0;i<=strlen(s1);i++){
+            if(i==strlen(s1))return "0";
+            if(ctoi(s1[i])<ctoi(s2[i])){
+                return Sub(s2,s1);
+            }else if(s1[i]==s2[i])continue;
+            break;
+        }
+    }
+    for(int i=0;i<=strlen(s1);i++){
+        if(i==strlen(s1))return s2;
+        if(s1[i]!='0')break;
+
+    }
+    for(int i=0;i<=strlen(s2);i++){
+        if(i==strlen(s2))return s1;
+        if(s2[i]!='0')break;
+    }
+    int Leng = strlen(s1);
+    char *temp = (char*)malloc(sizeof(char)*(Leng+1));
+    temp[Leng] = '\0';
+    for(int i=Leng-1,tens=1,m=strlen(s2)-1;i>=0;i--){
+        if(m>=0){
+            if(tens!=1){
+                temp[i] = itoc(9-ctoi(s2[m]));m--;
+            }else{
+                temp[i] = itoc(10-ctoi(s2[m]));
+                if(s2[m]!='0')tens=0;
+                m--;
+            }
+        }else{
+            temp[i] = '9';
+        }
+    }
+    char *p = Add(s1,temp);
+    while(*++p=='0');
+    return p;
+}
 static char *Mul(char *s1,char*s2){return "hello mul";}
 static char *Div(char *s1,char*s2){return "hello div";}
 int main(){
