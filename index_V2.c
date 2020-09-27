@@ -5,10 +5,10 @@ const int strLen = 600;
 static char **Split_String(char *input,char split_c){
     int input_length = strlen(input)+1;
     char **string_array = (char**)malloc(sizeof(char)*input_length);
-    for(int i=0,p=0,m=0;i<=input_length;i++){
-        if(input[i]==split_c||i==input_length){
-            string_array[m] = &input[p];
+    for(int i=0,p=0,m=0;i<input_length;i++){
+        if(input[i]==split_c||input[i]=='\n'){
             input[i]='\0';
+            string_array[m] = &input[p];
             p = i+1;
             m++;
             continue;
@@ -16,10 +16,65 @@ static char **Split_String(char *input,char split_c){
     }
     return string_array;
 }
-static char *Add(char *s1,char *s2){
-    
-    
+static int ctoi(char c){
+    if(c=='1')return 1;
+    else if(c=='2')return 2;
+    else if(c=='3')return 3;
+    else if(c=='4')return 4;
+    else if(c=='5')return 5;
+    else if(c=='6')return 6;
+    else if(c=='7')return 7;
+    else if(c=='8')return 8;
+    else if(c=='9')return 9;
+    return 0;
 }
+static char itoc(int n){
+    if(n==1)return '1';
+    else if(n==2)return '2';
+    else if(n==3)return '3';
+    else if(n==4)return '4';
+    else if(n==5)return '5';
+    else if(n==6)return '6';
+    else if(n==7)return '7';
+    else if(n==8)return '8';
+    else if(n==9)return '9';
+    return '0';
+}
+static char *itoa(int num){
+    char *result = (char*)malloc(sizeof(char)*10);
+    result[10] = '\0';
+    int index=9;
+    while(num>0&&index>=0){
+        result[index] = itoc(num%10);
+        num/=10;index--;
+    }
+    return &result[index+1];
+}
+static char *Add(char *s1,char *s2){
+    if(strlen(s1)<strlen(s2)){
+        return Add(s2,s1);
+    }
+    const int Leng = strlen(s1);
+    char *result = (char*)malloc(sizeof(char)*(Leng+2));
+    result[Leng+1] = '\0';
+    char *temp = (char*)malloc(sizeof(char)*(Leng+2));
+    temp[Leng-strlen(s2)]='\0';
+    for(int i=0;i<(Leng - strlen(s2));i++){
+        temp[i] = '0';
+    }
+    strcat(temp,s2);
+    for(int i=Leng-1;i>=0;i--){
+        int sum = (ctoi(s1[i])+ctoi(temp[i])+ctoi(result[i+1]));
+        result[i+1] = itoc(sum%10);
+        result[i] = itoc(sum/10);
+    }
+    if(result[0]!='0')return result;
+    while(*++result=='0');
+    return result;
+}
+static char *Sub(char *s1,char*s2){return "hello sub";}
+static char *Mul(char *s1,char*s2){return "hello mul";}
+static char *Div(char *s1,char*s2){return "hello div";}
 int main(){
     char input[strLen];
     while(fgets(input,strLen,stdin)!=NULL){
