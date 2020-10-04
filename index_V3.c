@@ -1,11 +1,12 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-const int strLen = 600;
+#define strLen 600
 static char **Split_String(char *input,char split_c){
     int input_length = strlen(input)+1;
     char **string_array = (char**)malloc(sizeof(char)*input_length);
-    for(int i=0,p=0,m=0;i<input_length;i++){
+    int i,p,m;
+    for(i=0,p=0,m=0;i<input_length;i++){
         if(input[i]==split_c||input[i]=='\n'){
             input[i]='\0';
             string_array[m] = &input[p];
@@ -16,17 +17,26 @@ static char **Split_String(char *input,char split_c){
     }
     return string_array;
 }
-void Add(char *s1,char *s2){
-
+static char *Add(char *s1,char *s2){
+    char AD1[600];char AD2[600];
+    int i;
+    if(strlen(s1)<strlen(s2))return Add(s2,s1);
+    for(i=0;i<=strlen(s1);i++){
+        if(i==strlen(s1)){
+            AD1[i] = '\0';
+        }
+        AD1[i] = s1[i];
+    }
+    return "hello add";
 }
-void Sub(char *s1,char *s2){
-
+static char *Sub(char *s1,char *s2){
+    return "hello sub";
 }
-void Mul(char *s1,char *s2){
-
+static char *Mul(char *s1,char *s2){
+    return "hello mul";
 }
-void Div(char *s1,char *s2){
-
+static char *Div(char *s1,char *s2){
+    return "hello div";
 }
 int main(){
     char input[strLen];
@@ -36,7 +46,7 @@ int main(){
         else if(*s[1]=='-')Sub(s[0],s[2]);
         else if(*s[1]=='*')Mul(s[0],s[2]);
         else if(*s[1]=='/')Div(s[0],s[2]);
-        printf("1");
+        free(s);
     }
     return 0;
 }
