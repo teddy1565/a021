@@ -10,22 +10,13 @@ typedef struct{
     struct power{
         int n,m;
     }power;
-    char a[600];
-    char b[600];
-    char c[600];
-    char d[600];
+    char a[600],b[600],c[600],d[600];
 }Karatsuba_str_format;
 typedef struct{
     struct power_str{
-        char a[600];
-        char b[600];
-        char c[600];
-        char d[600];
+        char a[600],b[600],c[600],d[600];
     }power;
-    char a[600];
-    char b[600];
-    char c[600];
-    char d[600];
+    char a[600],b[600],c[600],d[600];
     String temp;
 }Karatsuba_result_str;
 /*tool*/
@@ -44,13 +35,16 @@ void split(char *str,char *left,char *operator,char *right){
     }
     *right = '\0';
 }
-void swap(char *s1,char *s2){
+int swap(char *s1,char *s2){
     char tmp[600];
+    int n=0;
     if(strlen(s1)<strlen(s2)){
         strcpy(tmp,s1);
         strcpy(s1,s2);
         strcpy(s2,tmp);
+        n=1;
     }
+    return n;
 }
 static String Add_expansion_process(char *res){
     int i,m;
@@ -79,20 +73,10 @@ static int Zero_check(char *s1,char *s2){
     int m = strlen(s1);
     int n = strlen(s2);
     int f=0;
-    for(i=0;i<=m;i++){
-        if(i==m){
-            f=1;
-            break;
-        }
-        else if(s1[i]!='0')break;
-    }
-    for(i=0;i<=n;i++){
-        if(i==n){
-            f=1;
-            break;
-        }
-        else if(s2[i]!='0')break;
-    }
+    for(i=0;i<=m;i++)if(s1[i]!='0')break;
+    f = i==m?1:0;
+    for(i=0;i<=n;i++)if(s2[i]!='0')break;
+    f = i==n?1:0;
     return f;
 }
 static String Add(char *str1,char *str2){
@@ -120,15 +104,10 @@ static String Sub(char *str1,char *str2){
     free(rev);rev=NULL;
     str = Add(str1,str.res);
     rev = (char*)malloc(sizeof(char)*(strlen(str.res)));
-    for(i=1;i<strlen(str.res);i++){
-        if(str.res[i]!='0')break;
-    }
-    for(j=0;i<strlen(str.res);i++,j++){
-        rev[j] = str.res[i];
-    }
-    if(j!=0){
-        rev[j] = '\0';
-    }else{
+    for(i=1;i<strlen(str.res);i++)if(str.res[i]!='0')break;
+    for(j=0;i<strlen(str.res);i++,j++)rev[j] = str.res[i];
+    if(j!=0)rev[j] = '\0';
+    else{
         rev[0]='0';
         rev[1]='\0';
     }
@@ -183,95 +162,90 @@ static String Mul(char *str1,char *str2){
     Karatsuba_str_format str;
     Karatsuba_result_str result;
     int i,num;
-    if(Zero_check(str1,str2)==0){
-        str = Mul_expansion_process(str1,str2);
-        strcpy(response.res,str1);
-        if(strlen(str.a)+strlen(str.c)>8){
-            result.temp=Mul(str.a,str.c);
-            for(i=0;i<str.power.n+str.power.m;i++){
-                result.power.a[i]='0';
-            }
-            result.power.a[i]='\0';
-            strcpy(result.a,result.temp.res);
-            strcat(result.a,result.power.a);
-        }else if(strlen(str.a)+strlen(str.c)<=8){
-            result.temp = Mul_expansion_itoa(atoi(str.a)*atoi(str.c));
-            for(i=0;i<str.power.n+str.power.m;i++){
-                result.power.a[i]='0';
-            }
-            result.power.a[i]='\0';
-            strcpy(result.a,result.temp.res);
-            strcat(result.a,result.power.a);
+    str = Mul_expansion_process(str1,str2);
+    strcpy(response.res,str1);
+    if(strlen(str.a)+strlen(str.c)>8){
+        result.temp=Mul(str.a,str.c);
+        for(i=0;i<str.power.n+str.power.m;i++){
+            result.power.a[i]='0';
         }
-        if(strlen(str.a)+strlen(str.d)>8){
-            result.temp=Mul(str.a,str.d);
-            for(i=0;i<str.power.n;i++){
-                result.power.b[i]='0';
-            }
-            result.power.b[i]='\0';
-            strcpy(result.b,result.temp.res);
-            strcat(result.b,result.power.b);
-        }else if(strlen(str.a)+strlen(str.d)<=8){
-            result.temp=Mul_expansion_itoa(atoi(str.a)*atoi(str.d));
-            for(i=0;i<str.power.n;i++){
-                result.power.b[i]='0';
-            }
-            result.power.b[i]='\0';
-            strcpy(result.b,result.temp.res);
-            strcat(result.b,result.power.b);
+        result.power.a[i]='\0';
+        strcpy(result.a,result.temp.res);
+        strcat(result.a,result.power.a);
+    }else if(strlen(str.a)+strlen(str.c)<=8){
+        result.temp = Mul_expansion_itoa(atoi(str.a)*atoi(str.c));
+        for(i=0;i<str.power.n+str.power.m;i++){
+            result.power.a[i]='0';
         }
-        if(strlen(str.c)+strlen(str.b)>8){
-            result.temp=Mul(str.c,str.b);
-            for(i=0;i<str.power.m;i++){
-                result.power.c[i]='0';
-            }
-            result.power.c[i]='\0';
-            strcpy(result.c,result.temp.res);
-            strcat(result.c,result.power.c);
-        }else if(strlen(str.c)+strlen(str.b)<=8){
-            result.temp = Mul_expansion_itoa(atoi(str.c)*atoi(str.b));
-            for(i=0;i<str.power.m;i++){
-                result.power.c[i]='0';
-            }
-            result.power.c[i]='\0';
-            strcpy(result.c,result.temp.res);
-            strcat(result.c,result.power.c);
+        result.power.a[i]='\0';
+        strcpy(result.a,result.temp.res);
+        strcat(result.a,result.power.a);
+    }
+    if(strlen(str.a)+strlen(str.d)>8){
+        result.temp=Mul(str.a,str.d);
+        for(i=0;i<str.power.n;i++){
+            result.power.b[i]='0';
         }
-        if(strlen(str.b)+strlen(str.d)>8){
-            result.temp=Mul(str.b,str.d);
-            strcpy(result.d,result.temp.res);
-        }else if(strlen(str.b)+strlen(str.d)<=8){
-            result.temp = Mul_expansion_itoa(atoi(str.b)*atoi(str.d));
-            strcpy(result.d,result.temp.res);
+        result.power.b[i]='\0';
+        strcpy(result.b,result.temp.res);
+        strcat(result.b,result.power.b);
+    }else if(strlen(str.a)+strlen(str.d)<=8){
+        result.temp=Mul_expansion_itoa(atoi(str.a)*atoi(str.d));
+        for(i=0;i<str.power.n;i++){
+            result.power.b[i]='0';
         }
-        if(strlen(str1)+strlen(str2)>8){
-            /*printf("%s\t%s\n%s\t%s\n",result.a,result.b,result.c,result.d);*/
-            response = Add(result.a,result.b);
-            response = Add(response.res,result.c);
-            response = Add(response.res,result.d);
-        }else if(strlen(str1)+strlen(str2)<=8){
-            num = atoi(str1)*atoi(str2);
-            for(i=9;i>=0;i--){
-                result.temp.res[i]=((num>0?num%10:0)+'0');
-                num/=10;
+        result.power.b[i]='\0';
+        strcpy(result.b,result.temp.res);
+        strcat(result.b,result.power.b);
+    }
+    if(strlen(str.c)+strlen(str.b)>8){
+        result.temp=Mul(str.c,str.b);
+        for(i=0;i<str.power.m;i++){
+            result.power.c[i]='0';
+        }
+        result.power.c[i]='\0';
+        strcpy(result.c,result.temp.res);
+        strcat(result.c,result.power.c);
+    }else if(strlen(str.c)+strlen(str.b)<=8){
+        result.temp = Mul_expansion_itoa(atoi(str.c)*atoi(str.b));
+        for(i=0;i<str.power.m;i++){
+            result.power.c[i]='0';
+        }
+        result.power.c[i]='\0';
+        strcpy(result.c,result.temp.res);
+        strcat(result.c,result.power.c);
+    }
+    if(strlen(str.b)+strlen(str.d)>8){
+        result.temp=Mul(str.b,str.d);
+        strcpy(result.d,result.temp.res);
+    }else if(strlen(str.b)+strlen(str.d)<=8){
+        result.temp = Mul_expansion_itoa(atoi(str.b)*atoi(str.d));
+        strcpy(result.d,result.temp.res);
+    }
+    if(strlen(str1)+strlen(str2)>8){
+        /*printf("%s\t%s\n%s\t%s\n",result.a,result.b,result.c,result.d);*/
+        response = Add(result.a,result.b);
+        response = Add(response.res,result.c);
+        response = Add(response.res,result.d);
+    }else if(strlen(str1)+strlen(str2)<=8){
+        num = atoi(str1)*atoi(str2);
+        for(i=9;i>=0;i--){
+            result.temp.res[i]=((num>0?num%10:0)+'0');
+            num/=10;
+        }
+        result.temp.res[10]='\0';
+        for(i=0;i<=10;i++){
+            if(i==10){
+                response.res[0]='0';
+                response.res[1]='\0';
             }
-            result.temp.res[10]='\0';
-            for(i=0;i<=10;i++){
-                if(i==10){
-                    response.res[0]='0';
-                    response.res[1]='\0';
-                }
-                if(result.temp.res[i]!='0')break;
-            }
-            if(i!=10){
-                for(num=0;i<=10;i++,num++){
-                    response.res[num] = result.temp.res[i];
-                }
+            if(result.temp.res[i]!='0')break;
+        }
+        if(i!=10){
+            for(num=0;i<=10;i++,num++){
+                response.res[num] = result.temp.res[i];
             }
         }
-    }else{
-        response.res[0]='0';
-        response.res[1]='\0';
     }
     return response;
 }
@@ -279,9 +253,7 @@ static int Div_expansion_match(char *s1,char *s2){
     int state=0;
     int i,leng = strlen(s1);
     int n=0;
-    if(strlen(s1)>strlen(s2)){
-        state = 0;
-    }else if(strlen(s2)>strlen(s1)){
+    if(strlen(s2)>strlen(s1)){
         state = 1;
     }else if(strlen(s1)==strlen(s2)){
         state = 2;
@@ -305,8 +277,7 @@ static String Div(char *str1,char *str2){
     String response;
     String Division_n = Add("0","0");
     String MOD_num = Add("0","0");
-    String Split_str;
-    String tmp;
+    String Split_str,tmp;
     int i,m=0,s,k=0,u;
     if(Zero_check(str1,str2)==0){
         while(m<strlen(str1)){
@@ -344,25 +315,23 @@ static String Div(char *str1,char *str2){
         }
         response.res[k]='\0';
     }else{
-        response.res[0]='0';
-        response.res[1]='\0';
+        response = Add("0","0");
     }
     return response;
 }
 int main(){
-    char keyin[600];
-    char left[600];
-    char right[600];
-    char operator;
+    char keyin[600],left[600],right[600],operator;
+    int a=0;
     String r;
     while(fgets(keyin,600,stdin)!=NULL){
         split(keyin,left,&operator,right);
-        swap(left,right);
+        a = swap(left,right);
         if(operator=='+')r = Add(left,right);
         else if(operator=='-')r = Sub(left,right);
         else if(operator=='*')r = Mul(left,right);
         else if(operator=='/')r = Div(left,right);
-        printf("%s\n",r.res);
+        if(a==1&&operator=='-')printf("-%s\n",r.res);
+        else printf("%s\n",r.res);
     }
     return 0;
 }
