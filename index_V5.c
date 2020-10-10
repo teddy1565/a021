@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#define Str_Length_for_a021 600
 /*compiler option : [ gcc -g -std=c11 -Werror -ansi -pedantic index_V5.c -o a.out ] */
 
 void split(char *str,char *left,char *operator,char *right){
@@ -148,11 +149,11 @@ static int Div(char *left,char *right){
     return 0;
 }
 int main(){
-    char keyin[600];
-    char Left[600];
-    char Right[600];
+    char keyin[Str_Length_for_a021];
+    char Left[Str_Length_for_a021];
+    char Right[Str_Length_for_a021];
     char operator;
-    while(fgets(keyin,600,stdin)!=NULL){
+    while(fgets(keyin,Str_Length_for_a021,stdin)!=NULL){
         split(keyin,Left,&operator,Right);
         if(operator=='+')Add(Left,Right);
         else if(operator=='-')Sub(Left,Right);

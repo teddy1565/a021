@@ -236,8 +236,10 @@ static String Mul(char *str1,char *str2){
             }
             if(result.temp.res[i]!='0')break;
         }
-        for(num=0;i<=10;i++,num++){
-            response.res[num] = result.temp.res[i];
+        if(i!=10){
+            for(num=0;i<=10;i++,num++){
+                response.res[num] = result.temp.res[i];
+            }
         }
     }
     return response;
