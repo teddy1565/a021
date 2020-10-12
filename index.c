@@ -17,6 +17,27 @@ typedef struct{
     char a[600],b[600],c[600],d[600];
     String temp;
 }Karatsuba_result_str;
+static int Div_expansion_match(char *s1,char *s2){
+    int state=0;
+    int i,leng = strlen(s1);
+    int n=0;
+    if(strlen(s2)>strlen(s1)){
+        state = 1;
+    }else if(strlen(s1)==strlen(s2)){
+        state = 2;
+        for(i=0;i<leng;i++){
+            n = (s1[i]-'0')-(s2[i]-'0');
+            if(n>0){
+                state = 0;
+                break;
+            }else if(n<0){
+                state = 1;
+                break;
+            }
+        }
+    }
+    return state;
+}
 void split(char *str,char *left,char *operator,char *right){
     while(*str!=' '){
         *left++ = *str++;
@@ -32,17 +53,7 @@ void split(char *str,char *left,char *operator,char *right){
     }
     *right = '\0';
 }
-int swap(char *s1,char *s2){
-    char tmp[600];
-    int n=0;
-    if(strlen(s1)<strlen(s2)){
-        strcpy(tmp,s1);
-        strcpy(s1,s2);
-        strcpy(s2,tmp);
-        n=1;
-    }
-    return n;
-}
+
 static String Add_expansion_process(char *res){
     int i,m;
     char *response;
@@ -66,14 +77,11 @@ static String Add_expansion_process(char *res){
     return sresponse;
 }
 static int Zero_check(char *s1,char *s2){
-    int i;
-    int m = strlen(s1);
-    int n = strlen(s2);
-    int f=0;
-    for(i=0;i<=m;i++)if(s1[i]!='0')break;
-    f = i==m?1:0;
-    for(i=0;i<=n;i++)if(s2[i]!='0')break;
-    f = i==n?2:0;
+    int i,f;
+    for(i=0;i<=strlen(s1);i++)if(s1[i]!='0')break;
+    f = i==strlen(s1)?1:0;
+    for(i=0;i<=strlen(s2);i++)if(s2[i]!='0')break;
+    f = i==strlen(s2)?2:0;
     return f;
 }
 static String Add(char *str1,char *str2){
@@ -243,27 +251,7 @@ static String Mul(char *str1,char *str2){
     }
     return response;
 }
-static int Div_expansion_match(char *s1,char *s2){
-    int state=0;
-    int i,leng = strlen(s1);
-    int n=0;
-    if(strlen(s2)>strlen(s1)){
-        state = 1;
-    }else if(strlen(s1)==strlen(s2)){
-        state = 2;
-        for(i=0;i<leng;i++){
-            n = (s1[i]-'0')-(s2[i]-'0');
-            if(n>0){
-                state = 0;
-                break;
-            }else if(n<0){
-                state = 1;
-                break;
-            }
-        }
-    }
-    return state;
-}
+
 static String Div(char *str1,char *str2){
     String response = Add("0","0");
     String Division_n = Add("0","1");
@@ -286,13 +274,10 @@ static String Div(char *str1,char *str2){
         tmp = Mul(str2,Division_n.res);
         MOD_num = Sub(Split_str.res,tmp.res);
         response = Add(response.res,Division_n.res);
-        /*initial*/
         for(;m<str1L;m++){
             Division_n = Add("1","0");
             catch[0]=str1[m];
-            
             strcat(MOD_num.res,catch);
-            
             strcpy(Split_str.res,MOD_num.res);
             Split_str = Add(Split_str.res,"0");
             tmp = Mul(str2,Division_n.res);
@@ -318,9 +303,9 @@ int main(){
     String r;
     while(fgets(keyin,600,stdin)!=NULL){
         split(keyin,left,&operator,right);
-        a = swap(left,right);
+        a = Div_expansion_match(left,right);
         if(operator=='+')r = Add(left,right);
-        else if(operator=='-')r = Sub(left,right);
+        else if(operator=='-')r = a==0?Sub(left,right):Sub(right,left);
         else if(operator=='*')r = Mul(left,right);
         else if(operator=='/')r = Div(left,right);
         if(a==1&&operator=='-')printf("-%s\n",r.res);
